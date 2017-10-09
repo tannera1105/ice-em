@@ -1,9 +1,3 @@
-# A-Frame Project
-
-Built with [A-Frame](https://aframe.io), a web framework for building virtual reality experiences. Make WebVR with HTML and Entity-Component. Works on Vive, Rift, desktop, mobile platforms.
-
-Click and drag on desktop. Open it on a smartphone and use the device motion sensors. Or [plug in a VR headset](https://webvr.rocks)!
-
 # What is it
 
 A VR game with aeroplanes flying straight at you, and you have to shoot them down with the ice spears from your hand. You naturally throw these ice spears at the aeroplanes using a waving action from the Leap Motion, thus creating the first level of immersion. The second level of immersion comes from the vibration jacket that allows you to get a sense of "feeling" when you're "hit" by one of these aeroplanes. The final (and coolest, no pun intended) level of immersion comes from slowly feeling your hand turning cold from all the ice spears you're throwing (courtesy of a Peltier tile).
