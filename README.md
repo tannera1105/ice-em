@@ -2,6 +2,14 @@
 
 A VR game with aeroplanes flying straight at you, and you have to shoot them down with the ice spears from your hand. You naturally throw these ice spears at the aeroplanes using a waving action from the Leap Motion, thus creating the first level of immersion. The second level of immersion comes from the vibration jacket that allows you to get a sense of "feeling" when you're "hit" by one of these aeroplanes. The final (and coolest, no pun intended) level of immersion comes from slowly feeling your hand turning cold from all the ice spears you're throwing (courtesy of a Peltier tile).
 
+# How you can use it!
+
+As of right now, the only version of the game has to be run in a WebVR friendly browser (we specifically used Mozilla Firefox) and you must have the following...
+1. Oculus Rift
+2. LeapMotion Camera
+
+The following link shows how you can set up a LeapMotion camera to play the game: https://www.youtube.com/watch?v=OUdL3y-mrFM
+
 # How was it built
 
 VR: Oculus Rift 
