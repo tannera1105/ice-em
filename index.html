@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>CALHACKS SPACE SHOOTER</title>
+  <meta name="description" content="calhacks space shooter - A-Frame">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-template-component@^3.1.1/dist/aframe-template-component.min.js"></script>
+  <script src="//js.leapmotion.com/leap-0.4.1.js"></script>
+  <script src="leap-hand.js"></script> 
+  <script src="projector.js"></script> 
+  <script src="lm.js"></script>
+  <script src="randomize.js"></script>
+  <script src="fly.js"></script>
+  <script src="projectile.js"></script>
+</head>
+
+<body>
+
+<style>
+/* to display text in front of the aframe canvas*/
+a-scene{
+  z-index: -1;
+}
+
+/**/
+
+
+body{
+    background-color: #000;
+    /*margin: 0px;
+    overflow: hidden;*/
+	color: #fff;
+	font-family: 'Arial',
+}
+
+a:link, a:hover, a:visited, a:active {
+    color: white;
+    text-decoration: none;
+}
+
+.container{
+    position:absolute;
+    width:100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 15%;
+}
+
+.info{
+	font-family: Arial;
+	position:absolute;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 500px;
+
+    position: absolute;
+    /*top: 50%;*/
+    left: 50%;
+    transform: translate(-50%, -0%);
+
+
+}
+
+.info .company{
+    font-size: 2em;
+}
+
+.info .title{
+    font-size: 7em;
+    font-family: 'Poiret One', cursive;
+}
+
+.info .button{
+    font-weight: bold;
+    background-color: limegreen;
+    padding: 10px;
+    margin: 24px 0 0 0;
+}
+
+.info .instructions{
+    background-color: rgba(0, 0, 0, 1);
+    padding: 30px;
+    margin: 24px 0 0 0;
+}
+
+@media (max-width: 600px) {
+    .info {
+      width: 60%
+    }
+
+    .info .company{
+        font-size: 1em;
+    }
+
+    .info .title{
+      font-size: 3em;
+    }
+
+}
+</style>
+    <div id="container" class="container">
+      <div class="info">
+        <div class="title" style="color:#3366cc">Ice 'Em </div>
+        <a class="button" id="start_experience" href="#">Play</a>
+        <div class="instructions">
+          <div><strong>VR: </strong>Look using cursor and wave fingers over leap motion or click mouse button to shoot.</div>
+          <div><strong>Icy: </strong>Ice the planes. Everytime you successfully Ice 'Em, your hand becomes colder, use this power carefully ;)</div>
+        </div>
+      </div>
+</div>
+
+
+<!-- SCENE -->
+  <a-scene>
+
+    <a-assets>
+      <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" />
+<!--       <img id="sky" src="https://cdn.rawgit.com/suzmas/AFrame/3ac0c92d/images/space.jpg"/> -->
+      <img id="enemy-alien" src="https://cdn.rawgit.com/suzmas/AFrame/master/images/alien.svg" />
+      
+       <a-asset-item id="fireball-obj" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Ficeball.obj?1507456898682"></a-asset-item>
+      <a-asset-item id="fireball-mtl" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Ficeball.mtl?1507456897912"></a-asset-item>
+      <a-asset-item id="blueplane-obj" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Fblueplane.obj?1507447318732"></a-asset-item>
+      <a-asset-item id="blueplane-mtl" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Fblueplane.mtl?1507447317944"></a-asset-item>
+      <a-asset-item id="forest-obj" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Fforest.obj?1507472655349"></a-asset-item>
+      <a-asset-item id="forest-mtl" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Fforest.mtl?1507472664193"></a-asset-item>
+      <a-asset-item id="bomb-obj" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Fbomb.obj?1507459667785"></a-asset-item>
+      <a-asset-item id="bomb-mtl" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Fbomb.mtl?1507459667252"></a-asset-item>
+      <a-asset-item id="title-obj" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Ftinker.obj?1507473891052"></a-asset-item>
+      <a-asset-item id="title-mtl" src="https://cdn.glitch.com/6f8e43fb-67aa-4982-88f8-7c135d2c0dfa%2Ftitle.mtl?1507473890125"></a-asset-item>
+      <!--
+      <script id="enemies" type="text/x-nunjucks-template">
+        {% for i in range(0,1) %}
+          <a-image class="enemy"
+                   src="#enemy-alien"
+                   random-position="min: -20 0 0; max: 20 20 -400"
+                   transparent="true"
+                   scale="5 5 3"
+                   move-toward-camera>
+             // collision handler animation
+             <a-animation attribute="opacity" begin="collider-hit" dur="400" ease="linear" from="1" to="0"></a-animation>
+          </a-image>
+        {% endfor %}
+      </script>
+      -->
+      
+      <!-- Laser -->
+      <!-- TODO: Allow choice in firing -->
+      <a-mixin id="laser"
+               obj-model="obj: #fireball-obj; mtl: #fireball-mtl"
+               geometry="primitive: cylinder; radius: 0.05; height: 1"
+               material="src: #fireball-mtl; metalness: 0.2; roughness: 0.3; transparent: true;"
+               scale="0.1 0.1 0.1"
+               rotation="90 0 0"
+               projectile="speed: 0.7"
+               collider="target: .enemy">
+      </a-mixin>
+      
+      
+               
+      
+    </a-assets>
+    
+
+    <a-entity obj-model="obj: #forest-obj; mtl: #forest-mtl" position="0 -60 -120" rotation="-90 0 0" scale="2 2 2"></a-entity>
+    <a-entity obj-model="obj: #title-obj; mtl: #title-mtl" position="-160 100 -200" rotation="-130 180 45" scale=".65 .65 .65"></a-entity>
+    <a-entity obj-model="obj: #title-obj; mtl: #title-mtl" position="130 100 -200" rotation="-130 180 -45" scale=".65 .65 .65"></a-entity>
+
+<!--     <a-entity obj-model="obj: #forest-obj; mtl: #forest-mtl"  position="0000 -1000 -6100" rotation="-90 0 0" scale="5 5 5"></a-entity> -->
+<!--     <a-entity obj-model="obj: #forest-obj; mtl: #forest-mtl" position="-4000 -1000 -2000" rotation="-90 0 0" scale="5 5 5"></a-entity> -->
+<!--     <a-entity obj-model="obj: #forest-obj; mtl: #forest-mtl" position="4000 -1000 -2000" rotation="-90 0 0" scale="5 5 5"></a-entity> -->
+<!--     <a-entity obj-model="obj: #forest-obj; mtl: #forest-mtl" position="-4000 -1000 -6100" rotation="-90 0 0" scale="5 5 5"></a-entity> -->
+<!--     <a-entity obj-model="obj: #forest-obj; mtl: #forest-mtl" position="4000 -1000 -6100" rotation="-90 0 0" scale="5 5 5"></a-entity> -->
+    
+    <a-sky color="#87CEEB" rotation="0 -90 0"></a-sky>
+<!--
+    <a-box id="floor"
+           position="0 0 0"
+           color="yellow"
+           scale="10 0.2 10"></a-box>
+    -->
+    
+<!--      <a-entity camera="near: 0.01" look-controls position="0 1.5 0">
+        <a-entity leap-hand="hand: left"></a-entity>
+        <a-entity leap-hand="hand: right"></a-entity>
+    </a-entity> 
+     -->
+    <a-box id="ship"
+           height="0.2"
+           width="1"
+           position="0 -4 -1"
+           color="grey"
+           lock-to-camera>
+    
+    
+      <a-box id="score-box"
+             position="0.25 0 0.01"
+             width="0.5"
+             height="0.21"
+             depth="1"
+             color="#3366cc"
+>     
+        <!--
+        <a-entity
+                  position="-0.1 0.12 0.48"
+                  scale="0.002 0.002 0.002"
+                  rotation="-90 0 -30"
+                  obj-model="obj: #blueplane-obj; mtl: #blueplane-mtl">
+        </a-entity>-->
+        <a-entity position="0.92 0.1 0.5"
+              id="health-text"
+              rotation="0 0 0"
+              scale="3 3 1"
+                text="width: 1; color: white; font: mozillavr; value: 
+                      100
+                      "
+              >
+        </a-entity>
+      </a-box>
+      <a-box id="health-box"
+             position="-0.25 0 0.01"
+             width="0.5"
+             height="0.21"
+             depth="1"
+             color="#32CD32"
+>          
+        <!--
+       <a-entity
+             position="-0.08 0.2 0.65"
+             scale="0.009 0.009 0.009"
+                 rotation="-90 0 0"
+            obj-model="obj: #bomb-obj; mtl: #bomb-mtl">
+        </a-entity>   -->       
+        
+       <a-entity position="1.93 0.1 0.5"
+              id="score-text"
+              rotation="0 0 0"
+              scale="3 3 1"
+                text="width: 1; color: white; font: mozillavr; value: 
+                      00
+                      "
+
+                 ></a-entity>
+      </a-box>
+    </a-box>
+    <a-plane id="death-plane"
+           height="10"
+          width="10"
+           position="0 1 100"
+             z-offset = "100"
+           color="red"
+          opacity="0"
+          ></a-plane>
+
+    <!-- TODO: Add hands to player -->
+  <a-camera id="player" spawner="mixin: laser; on: click" click-listener click-to-fly="flying: true;" look-controls>
+     <a-entity leap-hand="hand: left"></a-entity>
+     <a-entity leap-hand="hand: right"></a-entity>
+  </a-camera>
+</a-scene>
+
+<script>
+	 (function() {
+  var startExperienteBtn = document.getElementById('start_experience');
+
+startExperienteBtn.onclick = function(){
+	  document.getElementById('container').outerHTML = '';
+document.getElementsByTagName('a-scene')[0].style.zIndex = 'auto';
+    
+};
+})();
+	</script>
+</body>
+
+</html>
